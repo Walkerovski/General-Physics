@@ -22,20 +22,20 @@ class Atom:
         way = randint(1, 4) % 4
         # try move right
         if way == 0:
-            if self.actual_location_x + 1 <= self.start_location_x + self.max_deviation:
-                self.actual_location_x += 1
+            if self.actual_location_x + 0.5 <= self.start_location_x + self.max_deviation:
+                self.actual_location_x += 0.5
         # try to move left
         elif way == 1:
-            if self.actual_location_x - 1 >= self.start_location_x - self.max_deviation:
-                self.actual_location_x -= 1
+            if self.actual_location_x - 0.5 >= self.start_location_x - self.max_deviation:
+                self.actual_location_x -= 0.5
         # try to move up
         elif way == 2:
-            if self.actual_location_y + 1 <= self.start_location_y + self.max_deviation:
-                self.actual_location_y += 1
+            if self.actual_location_y + 0.5 <= self.start_location_y + self.max_deviation:
+                self.actual_location_y += 0.5
         # try to move down
         else:
-            if self.actual_location_y - 1 >= self.start_location_y - self.max_deviation:
-                self.actual_location_y -= 1
+            if self.actual_location_y - 0.5 >= self.start_location_y - self.max_deviation:
+                self.actual_location_y -= 0.5
 
     def set_dim_x(self, new_dim_x):
         self.actual_location_x = new_dim_x
@@ -89,8 +89,12 @@ class Electron():
         self.acceleration_y = ACCELERATION_Y  # do ustalenia ze wzorow
         self.velocity_x = 0
         self.velocity_y = 0
-        self.velocity_without_atoms = VELOCITY_WITHOUT_ATOMS  # x-owa predkosc
+        self.velocity_without_atoms = 0#VELOCITY_WITHOUT_ATOMS  # x-owa predkosc
         #  ^ nie jest to chyba predkosc maksymalna jaka moze miec elektron
+
+    def move(self):
+        self.change_velocity_after_collision_with_atom(0,0)
+        self.set_new_location_x(self.actual_location_x + 3)
 
     def change_velocity_after_collision_with_atom(self, atom_velocity_x, atom_velocity_y):
         # prawo zachowania pedu ?
