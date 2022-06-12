@@ -6,6 +6,7 @@ ACCELERATION_X = 0.1
 ACCELERATION_Y = 0.1
 MAX_X_VELOCITY = 1
 
+SIZE = [0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.4, 0.6, 0.8, 1.2, 1.6, 2.4, 3.2, 4.8, 6.4]
 
 class Atom:
     def __init__(self, start_location_x, start_location_y, max_deviation, size, temperature):
@@ -18,23 +19,13 @@ class Atom:
         self.temperature = temperature
 
     def random_move(self):
-        way = randint(1, 4) % 4
-        # try move right
-        if way == 0:
-            if self.actual_location_x + self.temperature <= self.start_location_x + self.max_deviation:
-                self.actual_location_x += self.temperature
-        # try to move left
-        elif way == 1:
-            if self.actual_location_x - self.temperature >= self.start_location_x - self.max_deviation:
-                self.actual_location_x -= self.temperature
-        # try to move up
-        elif way == 2:
-            if self.actual_location_y + self.temperature <= self.start_location_y + self.max_deviation:
-                self.actual_location_y += self.temperature
-        # try to move down
-        else:
-            if self.actual_location_y - self.temperature >= self.start_location_y - self.max_deviation:
-                self.actual_location_y -= self.temperature
+        self.actual_location_x = gauss(self.start_location_x, self.temperature)
+        self.actual_location_x = min(self.actual_location_x, self.start_location_x + self.max_deviation)
+        self.actual_location_x = max(self.actual_location_x, self.start_location_x - self.max_deviation)
+        
+        self.actual_location_y = gauss(self.start_location_y, self.temperature)
+        self.actual_location_y = min(self.actual_location_y, self.start_location_y + self.max_deviation)
+        self.actual_location_y = max(self.actual_location_y, self.start_location_y - self.max_deviation)
 
     def set_max_deviation(self, new_max_deviation):
         self.max_deviation = new_max_deviation
@@ -73,23 +64,28 @@ class Electron():
         self.max_x_velocity = MAX_X_VELOCITY
 
     def move(self, atoms):
-        self.set_new_velocity_x()
-        self.set_new_velocity_y()
         self.set_new_location_x()
         self.set_new_location_y()
+        self.set_new_velocity_x()
+        self.set_new_velocity_y()
         self.check_collision(atoms)
 
     def check_collision(self, atoms):
         for a in atoms:
-            if self.actual_location_x > a.get_dim_x() - 1.7 \
-                and self.actual_location_x < a.get_dim_x() + 1.7:
-                if self.actual_location_y > a.get_dim_y() - 1.7 \
-                    and self.actual_location_y < a.get_dim_y() + 1.7:
+            if self.actual_location_x > a.get_dim_x() - SIZE[a.size] \
+                and self.actual_location_x < a.get_dim_x() + SIZE[a.size]:
+                if self.actual_location_y > a.get_dim_y() - SIZE[a.size] \
+                    and self.actual_location_y < a.get_dim_y() + SIZE[a.size]:
                     self.change_velocity_after_collision_with_atom(a)
 
     def change_velocity_after_collision_with_atom(self, atom):
-        self.velocity_x = -self.velocity_x * 0.7
-        if self.actual_location_y > atom.get_dim_y() - 1.7 \
+        if self.actual_location_x > atom.get_dim_x() - SIZE[atom.size] \
+            and self.actual_location_x < atom.get_dim_x():
+                self.velocity_x = -self.velocity_x * 0.7
+        else:
+            self.velocity_x = min(abs(self.velocity_x * 1.3), self.max_x_velocity)
+        
+        if self.actual_location_y > atom.get_dim_y() - SIZE[atom.size] \
             and self.actual_location_y < atom.get_dim_y():
                 self.velocity_y = -1
         else:
