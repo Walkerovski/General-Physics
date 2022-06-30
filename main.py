@@ -1,36 +1,70 @@
+import imp
+from pickle import TRUE
 import pygame
 from time import sleep
 from random import gauss
 from classes import Atom, Electron
 from consts import *
+from slider import Slider
+
+
+def gen_atoms(atoms_centres):
+    temperature = round(interface[0].val)
+    size = round(interface[2].val)
+    atoms = []
+    for xy in atoms_centres:
+        atoms.append(Atom(xy[0], xy[1], 15, size, temperature))
+    return atoms
+
+
+def gen_electrons():
+    no_of_electrons = round(interface[1].val)
+    electrons = []
+    for _ in range(no_of_electrons):
+        electrons.append(Electron(gauss(-WIDTH/100, WIDTH/50), gauss(HEIGHT/2, HEIGHT/5), 3))
+    return electrons
+
+
+def initial_setup():
+    atoms_centres_x = [WIDTH/20 + n*WIDTH/10 for n in range(10)]
+    atoms_centres_y = [HEIGHT/10 + n*HEIGHT/5 for n in range(5)]
+    atoms_centres = []
+    for x in atoms_centres_x:
+        for y in atoms_centres_y:
+            atoms_centres.append((x, y))
+    atoms = gen_atoms(atoms_centres)
+    electrons = gen_electrons()
+    return atoms, electrons
+
+
+def set_params():
+    temperature = round(interface[0].val)
+    size = round(interface[2].val)
+    for _ in atoms:
+        _.set_temperature(temperature)
+        _.set_size(size)
+    return gen_electrons()
+
 
 # Initialize the pygame
 pygame.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT + 100))
+font = pygame.font.SysFont('calibri', 20)
 
-atoms_centres_x = [WIDTH/20 + n*WIDTH/10 for n in range(10)]
-atoms_centres_y = [HEIGHT/10 + n*HEIGHT/5 for n in range(5)]
-atoms_centres = []
-atoms = []
-for x in atoms_centres_x:
-    for y in atoms_centres_y:
-        atoms_centres.append((x, y))
-for xy in atoms_centres:
-    atoms.append(Atom(xy[0], xy[1], MAX_DEVIATION, SIZE, TEMPERATURE))
+interface = [
+        Slider(screen, "Temperature", 50, 100, 10, 390, HEIGHT + 15, font),
+        Slider(screen, "No of electrons", 50, 100, 1, 140, HEIGHT + 15, font),
+        Slider(screen, "Size of atoms", 20, 30, 10, 640, HEIGHT + 15, font)
+    ]
 
-electrons = []
-for index in range(NUMBER_OF_ELECTRONS):
-    electrons.append(Electron(gauss(-WIDTH/100, WIDTH/50), gauss(HEIGHT/2, HEIGHT/5), 3))
+atoms, electrons = initial_setup()
+running = TRUE
 
-
-running = True
-size = 1
-temperature = 5
-# atom_size = 10
-# game loop
-
+#############################################
+# Simulation:
 while running:
     screen.fill(BLACK)
+    pygame.draw.rect(screen, GRAY, (0, HEIGHT + 10, WIDTH, HEIGHT + 100))
     drif = 0
 
     sleep(0.03)
@@ -50,12 +84,17 @@ while running:
         drif += electron.get_velocity_x()
         pygame.draw.circle(screen, BLUE, location, atom_size)
     output = (drif / len(electrons) / electrons[0].get_max_x_velocity())
-    font = pygame.font.Font('freesansbold.ttf', 15)
     text = font.render(f"Drif: {round(output, 2)}", True, TEXTCOLOR)
     screen.blit(text, (0, 0))
+    
+    for _ in interface:
+        _.draw()
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        for _ in interface:
+            if _.handle_event(event):
+                electrons = set_params()
     pygame.display.flip()
 pygame.quit()

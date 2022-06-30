@@ -36,13 +36,13 @@ class Atom:
 
     def set_new_velocity_x(self):
         self.velocity_x += gauss(0, self.temperature)
-        self.velocity_x = max(self.velocity_x, -3)
-        self.velocity_x = min(self.velocity_x, 3)
+        self.velocity_x = max(self.velocity_x, - self.temperature / 30)
+        self.velocity_x = min(self.velocity_x, self.temperature / 30)
 
     def set_new_velocity_y(self):
         self.velocity_y += gauss(0, self.temperature)
-        self.velocity_y = max(self.velocity_y, -3)
-        self.velocity_y = min(self.velocity_y, 3)
+        self.velocity_y = max(self.velocity_y, - self.temperature / 30)
+        self.velocity_y = min(self.velocity_y, self.temperature / 30)
 
     def set_max_deviation(self, new_max_deviation):
         self.max_deviation = new_max_deviation
