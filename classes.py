@@ -1,4 +1,4 @@
-from math import atan2, degrees
+from math import atan2, pi, cos, sin
 from random import gauss
 
 
@@ -101,31 +101,19 @@ class Electron():
                 and self.actual_location_x < a.get_dim_x() + a.size:
                 if self.actual_location_y > a.get_dim_y() - a.size \
                     and self.actual_location_y < a.get_dim_y() + a.size:
-                    self.change_velocity_after_collision_with_atom(a, HEIGHT)
+                    self.change_velocity_after_collision_with_atom(a)
 
-    def change_velocity_after_collision_with_atom(self, atom, HEIGHT):
-        radians = atan2(HEIGHT - self.get_location_y() - (HEIGHT - atom.get_dim_y()), self.get_location_x() - atom.get_dim_x())
-        degreess = degrees(radians)
-        degreess /= 360
-        degreess *= 400
-        degreess += 400
-        degreess %= 400
-        if degreess <= 100:
-            self.velocity_y -= degreess / 100 * 3
-            self.velocity_x += (100 - degreess) / 100 * 4
-        elif degreess <= 200:
-            degreess -= 100
-            self.velocity_y -= degreess / 100 * 3
-            self.velocity_x -= (100 - degreess) / 100 * 4
-        elif degreess <= 300:
-            degreess -= 200
-            self.velocity_y += degreess / 100 * 3
-            self.velocity_x -= (100 - degreess) / 100 * 4
-        elif degreess <= 400:
-            degreess -= 300
-            self.velocity_y += degreess / 100 * 3
-            self.velocity_x += (100 - degreess) / 100 * 4
-            
+    def change_velocity_after_collision_with_atom(self, atom):
+        radians = atan2(self.get_location_y() - atom.get_dim_y(), self.get_location_x() - atom.get_dim_x())
+        vx = abs(self.velocity_x) * cos(radians) + abs(self.velocity_y) * sin(radians)
+        vy = abs(self.velocity_x) * sin(radians) + abs(self.velocity_y) * cos(radians)
+        if vy < 1:
+            if cos(radians) <= 0:
+                vy = -3
+            else:
+                vy = 3
+        self.velocity_x = max(min(vx, self.max_x_velocity), - self.max_x_velocity)
+        self.velocity_y = max(min(vy, self.max_x_velocity), - self.max_x_velocity)
     
     def set_new_location_x(self, WIDTH, HEIGHT):
         self.actual_location_x += self.velocity_x

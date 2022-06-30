@@ -2,18 +2,18 @@ import pygame
 from consts import *
 
 class Slider():
-    def __init__(self, screen, name, val, maxi, mini, xpos, ypos, font):
+    def __init__(self, screen, name, mini, maxi, val, xpos, ypos, font):
         self.screen = screen
+        self.mini = mini  # minimum at slider position left
+        self.maxi = maxi  # maximum at slider position right
         self.val = val    # start value
-        self.maxi = maxi  # maximum at widgets.py position right
-        self.mini = mini  # minimum at widgets.py position left
         self.xpos = xpos
         self.ypos = ypos
         self.surf = pygame.surface.Surface((200, 80))
         self.surf.fill(BLACK)
         self.txt_surf = font.render(name, True, WHITE)
         self.txt_rect = self.txt_surf.get_rect(center=(100, 15))
-        self.hit = False  # the hit attribute indicates widgets.py movement due to mouse interaction
+        self.hit = False  # the hit attribute indicates slider movement due to mouse interaction
         self.button_surf = self.button_render()
         self.button_rect = None
 

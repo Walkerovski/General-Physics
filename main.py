@@ -52,9 +52,9 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT + 100))
 font = pygame.font.SysFont('calibri', 20)
 
 interface = [
-        Slider(screen, "Temperature", 50, 100, 10, 390, HEIGHT + 15, font),
-        Slider(screen, "No of electrons", 50, 100, 1, 140, HEIGHT + 15, font),
-        Slider(screen, "Size of atoms", 20, 30, 10, 640, HEIGHT + 15, font)
+        Slider(screen, "Temperature", 10, 100, 55, 390, HEIGHT + 15, font),
+        Slider(screen, "No of electrons", 1, 100, 50, 140, HEIGHT + 15, font),
+        Slider(screen, "Size of atoms", 10, 30, 20, 640, HEIGHT + 15, font)
     ]
 
 atoms, electrons = initial_setup()
